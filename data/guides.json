@@ -1,0 +1,24 @@
+{
+  "list": [
+    {
+      "groupId": 1,
+      "isFavorite": false,
+      "group": "分类",
+      "chooseClass": "choose",
+      "url": "/user/manage",
+      "menuFlag": "user-manage",
+      "menuName": "用户管理",
+      "menuIntro": "用于用户的管理功能"
+    },
+    {
+      "groupId": 1,
+      "isFavorite": false,
+      "group": "分类",
+      "chooseClass": "choose",
+      "url": "/app/manage",
+      "menuFlag": "app-manage",
+      "menuName": "app管理",
+      "menuIntro": "用于app的管理功能"
+    }
+  ]
+}
