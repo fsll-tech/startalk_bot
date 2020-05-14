@@ -8,7 +8,7 @@ class XMPPService extends Service {
     async sendMsg(msg, target, current) {
         let { xmpp, xml, to, address } = this.ctx.app;
 
-        if(target) to = target;
+        if (target) to = target;
         if (current) address = current;
 
         const messageTag = xml('message', {
@@ -28,19 +28,38 @@ class XMPPService extends Service {
 
     // 创建群.
     async createGroup(users) {
-        const { xmpp, xml } = this.ctx.app;
+        const { xmpp, xml, config } = this.ctx.app;
+        const { host } = config.xmppConfig;
         const id = this.ctx.helper.createUUID();
 
         const xmppTag = xml('iq', {
             id: id,
             type: 'set',
-            to: `${id}@conference.${this.ctx.app.config.xmppConfig.host}`
+            to: `${id}@conference.${host}`
         }, xml('query', {
             xmlns: 'http://jabber.org/protocol/create_muc'
         }));
 
-        xmpp.send(xmppTag).then(res => {
-            console.log(res);
+        await xmpp.send(xmppTag);
+
+        // 监听创建群的结果, 成功的话将成员拉进去.
+        xmpp.on('stanza', async (stanza) => {
+            if (stanza.is('iq') && stanza.attrs.id === id) {
+                if (stanza.children[0].children[0].attrs.result === 'success') {
+                    const groupTag = xml('iq', {
+                        id: id,
+                        type: 'set',
+                        to: `${id}@conference.${host}`
+                    }, xml('query', {
+                        xmlns: 'http://jabber.org/protocol/muc#invite_v2'
+                    }, users.map(user => xml('invite', {
+                        nick: user,
+                        jid: `${user}@${host}`
+                    }))));
+                    await xmpp.send(groupTag);
+                    this.sendMsg('"群聊已创建成功"');
+                }
+            }
         });
     };
 }

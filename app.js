@@ -65,7 +65,6 @@ class AppBootHook {
             } else if (text.startsWith('create____group')) {
                 const users = text.split(':::').pop().split(',');
                 ctx.service.xmpp.createGroup(users);
-                console.log(users);
             } else {
                 // 发送消息给xmpp服务器.
                 ctx.service.xmpp.sendMsg(text);
@@ -74,6 +73,7 @@ class AppBootHook {
         });
 
         /* link to xmpp server. */
+        /* 随时可以在任何挂载了xmpp实例的地方调用xmpp.stop()终止连接. */
         const xmpp = client({
             service: xmppConfig.url,
             username: `${xmppConfig.robot}@${xmppConfig.host}`,
@@ -91,10 +91,6 @@ class AppBootHook {
         });
 
         xmpp.on('stanza', async (stanza) => {
-            if(stanza.is('iq')) {
-                console.log(stanza, stanza.children, 122111111);
-            }
-
             if (stanza.is('message') && stanza.attrs.type === 'chat') {
                 let to;
 
@@ -111,9 +107,6 @@ class AppBootHook {
                 if (to.split('@').shift() !== 'test06') {
                     ctx.service.botkit.deliverMessage(stanza.getChild('body').text());
                 }
-
-                // 停止xmpp连接.
-                // await xmpp.stop();
             }
         });
 
