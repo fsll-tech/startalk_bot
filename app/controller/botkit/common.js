@@ -14,29 +14,29 @@ module.exports = app => {
                 text: '值班小助手暂时不能识别，建议您检查或者完善关键字。当前您为管理员，可以进行一系列操作, 请查阅文档'
             })
         } else {
-            const text = message.text;
+            const TEXT = message.text;
 
             // 如果消息中包含图片, 则将图片保存下来.
-            const imgFlag = text.includes('type="image"');
-            const pathMaps = await ctx.service.image.getImgPath();
+            const IMG_FLAG = TEXT.includes('type="image"');
+            const PATH_MAPS = await ctx.service.image.getImgPath();
 
-            if (imgFlag) {
-                let imgPath = text.match(/(http[s]?:\/\/([\w-]+.)+([:\d+])?(\/[\w-\.\/\?%&=]*)?)/gi)[0].replace(/\"$/g, '');
+            if (IMG_FLAG) {
+                const IMG_PATH = TEXT.match(/(http[s]?:\/\/([\w-]+.)+([:\d+])?(\/[\w-\.\/\?%&=]*)?)/gi)[0].replace(/\"$/g, '');
 
                 // 先检测图片目录是否存在, 不存在先创建.
-                if (!fs.existsSync(pathMaps.imgPath)) {
-                    fs.mkdirSync(pathMaps.imgPath);
+                if (!fs.existsSync(PATH_MAPS.imgPath)) {
+                    fs.mkdirSync(PATH_MAPS.imgPath);
                 }
 
                 // 再检测用户图片目录是否存在, 不存在先创建.
-                if (!fs.existsSync(pathMaps.userPath)) {
-                    fs.mkdirSync(pathMaps.userPath);
+                if (!fs.existsSync(PATH_MAPS.userPath)) {
+                    fs.mkdirSync(PATH_MAPS.userPath);
                 }
 
                 // 下载图片.
-                let imgName = imgPath.split('/').pop().split('?').shift();
-                let stream = fs.createWriteStream(path.join(pathMaps.userPath, imgName));
-                request(imgPath).pipe(stream).on('close', function (err) {
+                let imgName = IMG_PATH.split('/').pop().split('?').shift();
+                let stream = fs.createWriteStream(path.join(PATH_MAPS.userPath, imgName));
+                request(IMG_PATH).pipe(stream).on('close', function (err) {
                     console.log(`"图片${imgName}已保存"`);
                 });
                 await bot.reply(message, {

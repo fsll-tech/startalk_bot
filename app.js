@@ -123,6 +123,11 @@ class AppBootHook {
             }));
         });
 
+        // 心跳.
+        setInterval(() => {
+            ctx.service.xmpp.pingPong();
+        }, 20000);
+
         xmpp.start();
 
         // xmpp和botkit socket相关.
