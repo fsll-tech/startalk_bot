@@ -8,6 +8,7 @@ module.exports = app => {
     // 监听所有消息(问候或提示).
     app.bkController.on('message', async (bot, message) => {
         console.log(message.text, 'botkit server message event');
+        app.chatDbIns.then(dbs => dbs.get('list').push({ user: app.to, message: message.text.split(':').pop() }).write());
 
         if (message.text.match('管理员:')) {
             await bot.reply(message, {
@@ -54,6 +55,7 @@ module.exports = app => {
 
     //中止对话
     app.bkController.interrupts(['quit', 'exit', '退出', '中止'], ['message'], async (bot, message) => {
+        app.chatDbIns.then(dbs => dbs.get('list').push({ user: app.to, message: message.text.split(':').pop() }).write());
         await bot.reply(message, '"已退出对话"');
         await bot.cancelAllDialogs();  // cancel any active dialogs
     });

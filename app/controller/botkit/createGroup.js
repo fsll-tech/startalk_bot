@@ -4,6 +4,8 @@ module.exports = app => {
 
     // 对指定用户发送消息.
     app.bkController.hears(['创建群聊', '建群'], 'message', async (bot, message) => {
+        app.chatDbIns.then(dbs => dbs.get('list').push({ user: app.to, message: message.text.split(':').pop() }).write());
+
         originMsg = message;
         await bot.beginDialog(app.config.botkitSessionId.DIALOG_ID_FOR_AUTO_SEND_CREATE_GROUP);
     });

@@ -8,6 +8,8 @@ module.exports = app => {
 
     // 发送随机图片给用户.
     app.bkController.hears(new RegExp('发送图片'), 'message', async (bot, message) => {
+        app.chatDbIns.then(dbs => dbs.get('list').push({ user: app.to, message: message.text.split(':').pop() }).write());
+
         const pathMaps = await ctx.service.image.getImgPath();
 
         // 查看用户图片目录是否存在.
