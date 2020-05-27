@@ -40,7 +40,7 @@ class AppBootHook {
         const { xmppConfig, isDev } = this.app.config;
         
         // 检查聊天记录文件是否存在. 不存在的话则创建.
-        if (!this.app.chatDbIns) ctx.service.record.getChatDbIns();
+        if (!this.app.chatDbIns) app.runSchedule('chatRecord');
 
         /* link to botkit server. */
         const ws = new WebSocket('ws://localhost:3000');
