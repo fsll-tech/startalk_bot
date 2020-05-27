@@ -40,22 +40,7 @@ class AppBootHook {
         const { xmppConfig, isDev } = this.app.config;
         
         // 检查聊天记录文件是否存在. 不存在的话则创建.
-        const chatDir = path.join(__dirname, 'data/chatRecord'),
-            date = new Date;
-        const todayFileName = `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}.json`;
-        if (!fs.existsSync(chatDir)) {
-            fs.mkdirSync(chatDir);
-        }
-
-        // 检查今日的聊天记录文件是否存在, 不存在则创建.
-        if (!fs.existsSync(`${chatDir}/${todayFileName}`)) {
-            fs.writeFileSync(`${chatDir}/${todayFileName}`, '{"list":[]}');
-        }
-        const dbIns = ctx.service.lowdb.getDbIns(`chatRecord/${todayFileName}`);
-
-        // 将聊天记录操作句柄挂载到app上.
-        this.app.chatDbIns = dbIns;
-
+        if (!this.app.chatDbIns) ctx.service.record.getChatDbIns();
 
         /* link to botkit server. */
         const ws = new WebSocket('ws://localhost:3000');
@@ -72,7 +57,7 @@ class AppBootHook {
             const text = data.text;
 
             // 将消息写入记录.
-            dbIns.then(dbs => dbs.get('list').push({ user: `${this.app.address._local}@${xmppConfig.host}`, message: text }).write());
+            this.app.chatDbIns.then(dbs => dbs.get('list').push({ user: `${this.app.address._local}@${xmppConfig.host}`, message: text }).write());
             console.log('robot -->', text);
 
             // 判断消息类型.

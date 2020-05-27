@@ -69,6 +69,9 @@ module.exports = appInfo => {
     }
   };
 
+  // 每天23:59:00执行一次聊天记录文件创建.
+  config.chatRecordTick = '0 59 23 * * *';
+
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',
