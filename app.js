@@ -1,5 +1,4 @@
-const fs = require('fs');
-const path = require('path');
+const dayjs = require('dayjs');
 const WebSocket = require('ws');
 const debug = require('@xmpp/debug');
 const { client, xml } = require('@xmpp/client');
@@ -40,7 +39,7 @@ class AppBootHook {
         const { xmppConfig, isDev } = this.app.config;
         
         // 检查聊天记录文件是否存在. 不存在的话则创建.
-        if (!this.app.chatDbIns) app.runSchedule('chatRecord');
+        if (!this.app.chatDbIns) this.app.runSchedule('chatRecord');
 
         /* link to botkit server. */
         const ws = new WebSocket('ws://localhost:3000');
@@ -81,10 +80,33 @@ class AppBootHook {
 
         /* link to xmpp server. */
         /* 随时可以在任何挂载了xmpp实例的地方调用xmpp.stop()终止连接. */
+        /* xmpp密钥生成 */
+        let xmppSetData = await ctx.curl('https://dev.startalk.tech:8443/startalk_nav');
+        xmppSetData = JSON.parse(xmppSetData.data.toString());
+
+        // 获取fullkey.
+        let FULLKEY = await ctx.curl(`${xmppSetData.baseaddess.javaurl}/qtapi/nck/rsa/get_public_key.do`);
+        FULLKEY = JSON.parse(FULLKEY.data.toString());
+
+        const username = `${xmppConfig.robot}@${xmppConfig.host}`;
+        const encrypt = raw => (
+            ctx.service.xmppEncrypt.create({
+                key: FULLKEY.data.pub_key_fullkey,
+                padding: 1
+            }, raw).toString('base64')
+        );
+        const uinfo = {
+            p: xmppConfig.robotPwd,
+            a: 'testapp',
+            u: username,
+            d: dayjs().format('YYYY-MM-DD HH:mm:ss')
+        };
+        const encrypted = encrypt(new Buffer(JSON.stringify(uinfo)));
+
         const xmpp = client({
             service: xmppConfig.url,
-            username: `${xmppConfig.robot}@${xmppConfig.host}`,
-            password: xmppConfig.robotPwd,
+            username: username,
+            password: encrypted.toString('base64')
         });
 
         isDev && debug(xmpp, true);

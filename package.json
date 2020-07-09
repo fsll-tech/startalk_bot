@@ -11,6 +11,13 @@
     "egg-scripts": "^2.11.0"
   },
   "devDependencies": {
+    "bn.js": "^5.1.1",
+    "browserify-rsa": "^4.0.1",
+    "create-hash": "^1.2.0",
+    "parse-asn1": "^5.1.5",
+    "polyfill-crypto.getrandomvalues": "^1.0.0",
+    "safe-buffer": "^5.2.0",
+    "dayjs": "^1.8.18",
     "@xmpp/client": "^0.11.1",
     "@xmpp/debug": "^0.11.0",
     "autod": "^3.0.1",
@@ -18,18 +25,10 @@
     "botbuilder-adapter-web": "^1.0.5",
     "botbuilder-storage-mongodb": "^0.9.5",
     "botkit": "^4.6.1",
-    "cheerio": "^1.0.0-rc.3",
     "egg-bin": "^4.11.0",
     "egg-ci": "^1.11.0",
-    "egg-cors": "^2.2.3",
-    "egg-mock": "^3.21.0",
-    "egg-validate": "^2.0.2",
-    "egg-view-nunjucks": "^2.2.0",
-    "eslint": "^5.13.0",
-    "eslint-config-egg": "^7.1.0",
     "lowdb": "^1.0.0",
     "request": "^2.88.2",
-    "socket.io-client": "^2.3.0",
     "ws": "^7.3.0"
   },
   "engines": {
