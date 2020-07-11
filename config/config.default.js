@@ -20,13 +20,6 @@ module.exports = appInfo => {
   // add your middleware config here
   config.middleware = [];
 
-  // botkit对话id.
-  exports.botkitSessionId = {
-    DIALOG_ID_FOR_AUTO_SEND: 'AUTU_SEND_ID_1',
-    DIALOG_ID_FOR_IMG_SEND: 'IMG_SEND_ID_1',
-    DIALOG_ID_FOR_AUTO_SEND_CREATE_GROUP: 'AUTU_SEND_ID_CREATE_GROUP'
-  }
-
   // xmpp相关.
   exports.xmppConfig = {
     // 域.
@@ -43,9 +36,6 @@ module.exports = appInfo => {
 
   // 开发环境. 线上环境设置为false.
   exports.isDev = true;
-
-  // 每天23:59:00执行一次聊天记录文件创建.
-  config.chatRecordTick = '0 59 23 * * *';
 
   // add your user config here
   const userConfig = {

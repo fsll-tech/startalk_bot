@@ -1,6 +1,8 @@
-# fsll-app-admin
+# bot_schedule_nodejs_Infrastructure
 
-
+## introduction
+机器人基础架构 for nodejs
+包含xmpp连接
 
 ## QuickStart
 

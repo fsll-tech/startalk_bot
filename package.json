@@ -1,5 +1,5 @@
 {
-  "name": "fsll-app-admin",
+  "name": "startalk_bot",
   "version": "1.0.0",
   "description": "",
   "private": true,
@@ -22,21 +22,16 @@
     "@xmpp/debug": "^0.11.0",
     "autod": "^3.0.1",
     "autod-egg": "^1.1.0",
-    "botbuilder-adapter-web": "^1.0.5",
-    "botbuilder-storage-mongodb": "^0.9.5",
-    "botkit": "^4.6.1",
     "egg-bin": "^4.11.0",
     "egg-ci": "^1.11.0",
-    "lowdb": "^1.0.0",
-    "request": "^2.88.2",
-    "ws": "^7.3.0"
+    "request": "^2.88.2"
   },
   "engines": {
     "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --title=egg-server-fsll-app-admin",
-    "stop": "egg-scripts stop --title=egg-server-fsll-app-admin",
+    "start": "egg-scripts start --daemon --title=egg-server-startalk_bot",
+    "stop": "egg-scripts stop --title=egg-server-startalk_bot",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",
