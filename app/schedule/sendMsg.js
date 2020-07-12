@@ -11,9 +11,9 @@ module.exports = app => {
 
             // 包装xmpp标签.
             const messageTag = xml('message', {
-                to: `test04@${host}`, // 给谁发消息.
+                to: `9f87b83f038d4704fda2c0761e77f0e0@conference.${host}`, // 给谁发消息.
                 from: address, // 谁发送的消息.
-                type: 'chat', // 消息类型, 单聊固定为chat.
+                type: 'groupchat', // 消息类型, 单聊固定为chat.
                 isHiddenMsg: '0' // 固定为0
             }, xml('body', {
                 maType: 6, // 固定为6.
