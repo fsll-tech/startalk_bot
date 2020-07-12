@@ -1,8 +1,5 @@
-# bot_schedule_nodejs_Infrastructure
-
 ## introduction
-机器人基础架构 for nodejs
-包含xmpp连接
+机器人自动发送消息给群 for nodejs
 
 ## QuickStart
 
