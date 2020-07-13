@@ -24,7 +24,7 @@ module.exports = app => {
             }));
 
             // 发送xmpp消息.
-            await xmpp.send(messageTag);
+            // await xmpp.send(messageTag);
         },
     };
 };

@@ -43,6 +43,7 @@ class AppBootHook {
             username: username,
             password: encrypted.toString('base64')
         });
+        xmpp.start();
 
         isDev && debug(xmpp, true);
 
@@ -81,20 +82,25 @@ class AppBootHook {
             this.app.address = address;
 
             // 告知xmpp可以收发消息了.
-            await xmpp.send(xml('presence', {
-                xmlns: 'http://jabber.org/protocol/caps',
+            await xmpp.send(xml('presence', {}, xml('priority', {}, 5), xml('c', {
+                ext: 'ca cs ep-notify-2 html',
                 node: 'http://psi-im.org/caps',
                 ver: 'caps-b75d8d2b25',
-                ext: 'ca cs ep-notify-2 html'
-            }));
+                xmlns: 'http://jabber.org/protocol/caps'
+            })));
+
+            // 生成ckey. 后面调用星语接口需要用到.
+            xmpp.on('stanza', async (stanza) => {
+                if (stanza.is('presence') && stanza.attrs.xmlns === 'config:xmpp:time_key') {
+                    console.log(stanza, 121212);
+                }
+            });
         });
 
         // 心跳.
         setInterval(() => {
             ctx.service.pingPong.pingPong();
         }, 20000);
-
-        xmpp.start();
 
         // xmpp相关.
         this.app.xml = xml;
