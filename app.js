@@ -1,5 +1,7 @@
+const crypto = require('crypto');
 const dayjs = require('dayjs');
 const debug = require('@xmpp/debug');
+const Buffer = require('safe-buffer').Buffer;
 const { client, xml } = require('@xmpp/client');
 
 // mount global variables.
@@ -81,6 +83,15 @@ class AppBootHook {
             // 挂载xmpp对向用户信息.
             this.app.address = address;
 
+            // 发送session bind请求, 用于获取服务端返回的key_value.
+            const sessionTag = xml('iq', {
+                type: 'get',
+                id: '_session_auth_2'
+            }, xml('session', {
+                xmlns: 'urn:ietf:params:xml:ns:xmpp-session'
+            }));
+            await xmpp.send(sessionTag);
+
             // 告知xmpp可以收发消息了.
             await xmpp.send(xml('presence', {}, xml('priority', {}, 5), xml('c', {
                 ext: 'ca cs ep-notify-2 html',
@@ -89,10 +100,18 @@ class AppBootHook {
                 xmlns: 'http://jabber.org/protocol/caps'
             })));
 
-            // 生成ckey. 后面调用星语接口需要用到.
+            // 获取key_value, 生成ckey. 调用星语接口需要用到. 同时保存key_value, 星语接口也会用到.
             xmpp.on('stanza', async (stanza) => {
                 if (stanza.is('presence') && stanza.attrs.xmlns === 'config:xmpp:time_key') {
-                    console.log(stanza, 121212);
+                    const keyVal = stanza.attrs.key_value,
+                        t = new Date().getTime();
+
+                    // 生成ckey.
+                    const ckey = new Buffer(`u=${xmppConfig.robot}&k=${crypto.createHash('md5').update(keyVal + t).digest('hex').toUpperCase()}&d=${xmppConfig.host}&t=${t}`).toString('base64');
+
+                    // 绑定ckey和key_value.
+                    this.app.ckey = ckey;
+                    this.app.keyVal = keyVal;
                 }
             });
         });
