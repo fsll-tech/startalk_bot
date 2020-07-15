@@ -1,5 +1,5 @@
 ## introduction
-机器人自动创建群并将指定用户拉进群 for nodejs
+机器人自动创建群(每分钟)并将指定用户拉进群 for nodejs
 
 ## QuickStart
 

@@ -6,7 +6,7 @@ const request = require('request');
 module.exports = app => {
     return {
         schedule: {
-            interval: '5s',
+            interval: '5m',
             type: 'all'
         },
         async task(ctx) {
@@ -19,9 +19,9 @@ module.exports = app => {
             // 包装xmpp标签.
             const createXmppTag = (msg) => {
                 return xml('message', {
-                    to: `test04@${host}`, // 给谁发消息.
+                    to: `${id}@conference.${host}`, // 给谁发消息.
                     from: address, // 谁发送的消息.
-                    type: 'chat', // 消息类型, 单聊固定为chat.
+                    type: 'groupchat', // 消息类型, 单聊固定为chat.
                     isHiddenMsg: '0' // 固定为0
                 }, xml('body', {
                     maType: 6, // 固定为6.
