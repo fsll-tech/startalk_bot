@@ -1,8 +1,3 @@
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-const request = require('request');
-
 module.exports = app => {
     return {
         schedule: {
