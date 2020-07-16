@@ -71,9 +71,52 @@ class AppBootHook {
                 this.app.to = to;
 
                 // 假设test06没有权限.
-                if (to.split('@').shift() !== 'test06') {
-                    ctx.service.botkit.deliverMessage(stanza.getChild('body').text());
-                }
+                // if (to.split('@').shift() !== 'test06') {
+                //     ctx.service.botkit.deliverMessage(stanza.getChild('body').text());
+                // }
+
+                // 自动给用户回复一条消息.
+                // 包装xmpp标签.
+                const createXmppTag = (msg) => {
+                    return xml('message', {
+                        to: stanza.attrs.from, // 给谁发消息.
+                        from: stanza.attrs.to, // 谁发送的消息.
+                        type: 'chat', // 消息类型.
+                        isHiddenMsg: '0' // 固定为0.
+                    }, xml('body', {
+                        maType: 6, // 固定为6.
+                        msgType: 1, // 固定为1.
+                        id: ctx.helper.createUUID() // 每条消息的id.
+                    }, msg), xml('active', {
+                        xmlns: 'http://jabber.org/protocol/chatstates'
+                    }));
+                };
+                const msgs = ['你好啊', '我在', '有什么事儿吗?'];
+                const idx = parseInt(Math.random() * (msgs.length - 0) + 0, 10);
+                const autoReplyTag = createXmppTag(msgs[idx]);
+                xmpp.send(autoReplyTag);
+            }
+
+            // 监听群聊消息并自动回复(自动加上用户名)
+            if (stanza.is('message') && stanza.attrs.type === 'groupchat' && stanza.attrs.sendjid !== `${xmppConfig.robot}@${xmppConfig.host}`) {
+                const groupid = stanza.attrs.from.split('/').shift();
+                // 包装xmpp标签.
+                const createXmppTag = (msg) => {
+                    return xml('message', {
+                        to: groupid, // 给谁发消息.
+                        from: stanza.attrs.to, // 谁发送的消息.
+                        type: 'groupchat', // 消息类型.
+                        isHiddenMsg: '0' // 固定为0.
+                    }, xml('body', {
+                        maType: 6, // 固定为6.
+                        msgType: 1, // 固定为1.
+                        id: ctx.helper.createUUID() // 每条消息的id.
+                    }, msg), xml('active', {
+                        xmlns: 'http://jabber.org/protocol/chatstates'
+                    }));
+                };
+                const autoReplyTag = createXmppTag(`机器人自动回复(用户: ${stanza.attrs.sendjid})`);
+                xmpp.send(autoReplyTag);
             }
         });
 
