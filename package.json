@@ -11,20 +11,23 @@
     "egg-scripts": "^2.11.0"
   },
   "devDependencies": {
-    "bn.js": "^5.1.1",
-    "browserify-rsa": "^4.0.1",
-    "create-hash": "^1.2.0",
-    "parse-asn1": "^5.1.5",
-    "polyfill-crypto.getrandomvalues": "^1.0.0",
-    "safe-buffer": "^5.2.0",
-    "dayjs": "^1.8.18",
     "@xmpp/client": "^0.11.1",
     "@xmpp/debug": "^0.11.0",
     "autod": "^3.0.1",
     "autod-egg": "^1.1.0",
+    "bn.js": "^5.1.1",
+    "botbuilder-adapter-web": "^1.0.8",
+    "botkit": "^4.9.0",
+    "browserify-rsa": "^4.0.1",
+    "create-hash": "^1.2.0",
+    "dayjs": "^1.8.18",
     "egg-bin": "^4.11.0",
     "egg-ci": "^1.11.0",
-    "request": "^2.88.2"
+    "parse-asn1": "^5.1.5",
+    "polyfill-crypto.getrandomvalues": "^1.0.0",
+    "request": "^2.88.2",
+    "safe-buffer": "^5.2.0",
+    "ws": "^7.3.1"
   },
   "engines": {
     "node": ">=10.0.0"

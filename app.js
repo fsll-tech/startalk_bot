@@ -1,19 +1,76 @@
 const crypto = require('crypto');
 const dayjs = require('dayjs');
+const WebSocket = require('ws');
 const debug = require('@xmpp/debug');
 const Buffer = require('safe-buffer').Buffer;
 const { client, xml } = require('@xmpp/client');
+const { Botkit, BotkitConversation } = require('botkit');
+const { WebAdapter } = require('botbuilder-adapter-web');
+
+const adapter = new WebAdapter(/* options */);
+const controller = new Botkit({ adapter });
 
 // mount global variables.
 class AppBootHook {
     constructor(app) {
         // 挂载app实例.
         this.app = app;
+        // 挂载botkit实例.
+        this.app.bkController = controller;
+        // 挂载botkit对话对象.
+        this.app.BotkitConversation = BotkitConversation;
     }
 
     async willReady() {
         const ctx = this.app.createAnonymousContext();
         const { xmppConfig, isDev } = this.app.config;
+        const sendMsg = async (msg, target, current) => {
+            let { xmpp, xml, to, address } = ctx.app;
+
+            if (target) to = target;
+            if (current) address = current;
+
+            const messageTag = xml('message', {
+                to: to,
+                from: address,
+                type: 'chat',
+                isHiddenMsg: '0'
+            }, xml('body', {
+                maType: 6,
+                msgType: 1,
+                id: ctx.helper.createUUID()
+            }, msg), xml('active', {
+                xmlns: 'http://jabber.org/protocol/chatstates'
+            }));
+            await xmpp.send(messageTag);
+        };
+
+        /* start the socket service. */
+        const ws = new WebSocket('ws://localhost:3000');
+        ws.on('open', function () {
+            ws.send(JSON.stringify({
+                type: 'welcome',
+                user: 'botkit_uuid',
+                channel: 'socket'
+            }));
+        });
+
+        ws.on('message', data => {
+            data = JSON.parse(data);
+            const text = data.text;
+
+            console.log('botkit -->', text);
+
+            // 判断消息类型.
+            if (text.startsWith('send____msg')) {
+                const info = text.split(':::').pop().split('-');
+                sendMsg(`${info[1]}   --来自机器人发送消息[代理自${this.app.to.split('@').shift()}]`, info[0] + '@' + xmppConfig.host);
+                sendMsg('"消息发送成功"');
+            } else {
+                // 发送消息给xmpp服务器.
+                sendMsg(text);
+            }
+        });
 
         /* link to xmpp server. */
         /* 随时可以在任何挂载了xmpp实例的地方调用xmpp.stop()终止连接. */
@@ -71,52 +128,14 @@ class AppBootHook {
                 this.app.to = to;
 
                 // 假设test06没有权限.
-                // if (to.split('@').shift() !== 'test06') {
-                //     ctx.service.botkit.deliverMessage(stanza.getChild('body').text());
-                // }
-
-                // 自动给用户回复一条消息.
-                // 包装xmpp标签.
-                const createXmppTag = (msg) => {
-                    return xml('message', {
-                        to: stanza.attrs.from, // 给谁发消息.
-                        from: stanza.attrs.to, // 谁发送的消息.
-                        type: 'chat', // 消息类型.
-                        isHiddenMsg: '0' // 固定为0.
-                    }, xml('body', {
-                        maType: 6, // 固定为6.
-                        msgType: 1, // 固定为1.
-                        id: ctx.helper.createUUID() // 每条消息的id.
-                    }, msg), xml('active', {
-                        xmlns: 'http://jabber.org/protocol/chatstates'
+                if (to.split('@').shift() !== 'test06') {
+                    ws.send(JSON.stringify({
+                        type: 'message',
+                        text: `普通会员:${stanza.getChild('body').text()}`,
+                        user: 'botkit_uuid',
+                        channel: 'socket'
                     }));
-                };
-                const msgs = ['你好啊', '我在', '有什么事儿吗?'];
-                const idx = parseInt(Math.random() * (msgs.length - 0) + 0, 10);
-                const autoReplyTag = createXmppTag(msgs[idx]);
-                xmpp.send(autoReplyTag);
-            }
-
-            // 监听群聊消息并自动回复(自动加上用户名)
-            if (stanza.is('message') && stanza.attrs.type === 'groupchat' && stanza.attrs.sendjid !== `${xmppConfig.robot}@${xmppConfig.host}`) {
-                const groupid = stanza.attrs.from.split('/').shift();
-                // 包装xmpp标签.
-                const createXmppTag = (msg) => {
-                    return xml('message', {
-                        to: groupid, // 给谁发消息.
-                        from: stanza.attrs.to, // 谁发送的消息.
-                        type: 'groupchat', // 消息类型.
-                        isHiddenMsg: '0' // 固定为0.
-                    }, xml('body', {
-                        maType: 6, // 固定为6.
-                        msgType: 1, // 固定为1.
-                        id: ctx.helper.createUUID() // 每条消息的id.
-                    }, msg), xml('active', {
-                        xmlns: 'http://jabber.org/protocol/chatstates'
-                    }));
-                };
-                const autoReplyTag = createXmppTag(`机器人自动回复(用户: ${stanza.attrs.sendjid})`);
-                xmpp.send(autoReplyTag);
+                }
             }
         });
 
@@ -140,7 +159,8 @@ class AppBootHook {
             ctx.service.pingPong.pingPong();
         }, 20000);
 
-        // xmpp相关.
+        // xmpp和socket相关.
+        this.app.ws = ws;
         this.app.xml = xml;
         this.app.xmpp = xmpp;
     };

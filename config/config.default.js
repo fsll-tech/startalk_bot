@@ -20,6 +20,11 @@ module.exports = appInfo => {
   // add your middleware config here
   config.middleware = [];
 
+  // botkit对话id.
+  exports.botkitSessionId = {
+    DIALOG_ID_FOR_AUTO_SEND: 'AUTU_SEND_ID_1'
+  }
+
   // xmpp相关.
   exports.xmppConfig = {
     // 域.
