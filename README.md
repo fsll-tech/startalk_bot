@@ -16,3 +16,15 @@
 - auto_send_img 机器人自动发送图片
 - auto_send_single_chat 机器人自动发送单聊消息
 - botkit_interaction 机器人操作botkit
+
+## 配置
+在每个folder下的`config`文件夹中, 修改`config.default.js`中的`xmppConfig`, 对xmpp服务器进行配置:
+```
+xmppConfig = {
+    host: 服务主域, 类似: 'dev.startalk.tech', 主要用来拼接xmpp用户名及其他字符串拼接
+    url: xmpp服务器地址
+    robot: 机器人账号名, xmpp上的某个账号
+    robotPwd: 机器人账号密码
+    imgUrl: 图片服务器地址
+};
+```
