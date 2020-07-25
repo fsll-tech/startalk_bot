@@ -18,11 +18,11 @@ class AppBootHook {
         /* link to xmpp server. */
         /* 随时可以在任何挂载了xmpp实例的地方调用xmpp.stop()终止连接. */
         /* xmpp密钥生成 */
-        let xmppSetData = await ctx.curl('https://dev.startalk.tech:8443/startalk_nav');
+        let xmppSetData = await ctx.curl(nav_url);
         xmppSetData = JSON.parse(xmppSetData.data.toString());
 
         // 获取fullkey.
-        let FULLKEY = await ctx.curl(`${xmppSetData.baseaddess.javaurl}/qtapi/nck/rsa/get_public_key.do`);
+        let FULLKEY = await ctx.curl(key_url);
         FULLKEY = JSON.parse(FULLKEY.data.toString());
 
         const username = `${xmppConfig.robot}@${xmppConfig.host}`;
