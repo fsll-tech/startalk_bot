@@ -29,4 +29,4 @@ xmppConfig = {
 };
 ```
 
-- 每个folder中的`app.js`文件中, 搜索`nav_url`和`key_url`以获取xmpp服务器的配置信息.
+- 每个folder中的`app.js`文件中, 搜索`nav_url`和`key_url`并填入以获取xmpp服务器的配置信息.
